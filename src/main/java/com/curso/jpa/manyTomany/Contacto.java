@@ -31,12 +31,8 @@ public class Contacto implements Serializable {
 	@Column(name="FECHA_NAC")
 	@Temporal(TemporalType.DATE)
 	private Date fecha_n;
-	
-	@JoinTable(name = "GRUPOS_CONTACTOS", joinColumns = {
-	        @JoinColumn(name = "ID_CONTACTO", referencedColumnName = "ID")}, inverseJoinColumns = {
-	        @JoinColumn(name = "ID_GRUPO", referencedColumnName = "ID")})
-		    @ManyToMany(fetch = FetchType.LAZY)
-	
+		    
+	@ManyToMany(mappedBy="contactoCollection", fetch = FetchType.LAZY)
     private Collection<Grupo> grupoCollection;
 
 	public Contacto() {

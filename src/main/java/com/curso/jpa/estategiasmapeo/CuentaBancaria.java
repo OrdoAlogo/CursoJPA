@@ -3,7 +3,7 @@ package com.curso.jpa.estategiasmapeo;
 import java.io.Serializable;
 import javax.persistence.*;
 @Entity
-@Table(name = "CUENTABANKARIA")
+@Table(name = "CUENTABANCARIA")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TIPO_CUENTA")
 public abstract class CuentaBancaria implements Serializable {

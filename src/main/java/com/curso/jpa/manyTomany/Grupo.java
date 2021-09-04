@@ -24,8 +24,11 @@ public class Grupo implements Serializable {
 	@Column(name="NOMBRE")
 	private String nombre;
 	
-	@ManyToMany(mappedBy = "grupoCollection", 
-            fetch = FetchType.LAZY)
+	@JoinTable(name = "GRUPOS_CONTACTOS", 
+			inverseJoinColumns = { @JoinColumn(name = "ID_CONTACTO", referencedColumnName = "ID")}, 
+			joinColumns = { @JoinColumn(name = "ID_GRUPO", referencedColumnName = "ID")}
+			)
+	@ManyToMany(fetch = FetchType.LAZY)
 	private Collection<Contacto> contactoCollection;
 
 	public Grupo() {
