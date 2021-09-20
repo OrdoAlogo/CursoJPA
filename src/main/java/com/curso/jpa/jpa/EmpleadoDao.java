@@ -3,6 +3,10 @@ package com.curso.jpa.jpa;
 import java.util.List;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import com.curso.jpa.domain.Department;
 import com.curso.jpa.domain.Empleado;
@@ -51,6 +55,14 @@ public class EmpleadoDao {
 	    	   System.out.println("Puesto: "+emp.getTrabajo().getTitulo());
 	    	   System.out.println();
 	       }
+	       
+	       
+	       //Metodo para buscar por filtrado
+	       try {
+	    	   dao.buscarPorCriterios(0, 1);
+			} catch (Exception e1) {
+				System.out.println("Introduzca valores validos");
+			}
 	}
 	
 	
@@ -133,4 +145,85 @@ public class EmpleadoDao {
 		List<Empleado> lista = query.getResultList();
 		return lista;
 	}
+	
+	/**/
+	
+	/**
+	* Metodo que devuelve la lista de los empeados de un departamento o
+	* de todos los departamentos (idDepartamentos llega null) si no se indica
+	* cuyo salario es mayor que el indicado
+	*
+	* @param idDepartamento - opcional null
+	* @param salarioMayorAEste no opcional
+	* @return
+	 * @throws Exception 
+	*/
+	public List<Empleado> buscarPorCriterios(int idDepartamento, double salarioMayorAEste ) throws Exception{
+		
+		EntityManager em = factory.createEntityManager();
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		
+		CriteriaQuery<Empleado> consulta = cb.createQuery(Empleado.class);
+		
+		Root<Empleado> personas = consulta.from(Empleado.class); //FROM Empleado e
+		Predicate pDepartamento = null,pSalarioMayor = null; // where p1 p2
+		
+		if(idDepartamento != 0) {
+			pDepartamento = cb.equal(personas.get("department_id"), idDepartamento);
+		}
+		
+		if(salarioMayorAEste != 0) {
+			
+			pSalarioMayor = cb.equal(personas.get("salary"), salarioMayorAEste);
+			
+		}
+		if(idDepartamento != 0 && salarioMayorAEste !=0) {
+			
+			Predicate departamentoAndSalario = cb.and(pDepartamento,pSalarioMayor);
+			consulta.select(personas).where(departamentoAndSalario);
+		}
+		else if(idDepartamento != 0) {
+			
+			consulta.select(personas).where(pDepartamento);
+		}
+		else if(salarioMayorAEste != 0) {
+			
+			consulta.select(personas).where(pSalarioMayor);
+			
+		}if(salarioMayorAEste <= 0) {
+			
+			throw new Exception("Introduzca el salario");
+			
+		}
+		
+		List<Empleado> lista = em.createQuery(consulta).getResultList();
+		System.out.println("Aqui empieza la busqueda por filtro");
+		
+		for(Empleado p: lista) {
+
+			System.out.println(p.getFirst_name() + " - " + p.getDepartment_id()+" "+p.getSalary());
+		}
+	return lista;
+	}
+
+	/*Metodo para buscar empleados con comodines (like)*/
+	/*PENDIENTE*/
+	public List<Empleado> buscarPorCriteriaLike(String palabra){
+		
+		EntityManager em = factory.createEntityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Empleado> consulta = cb.createQuery(Empleado.class);
+		
+		Root<Empleado> personas = consulta.from(Empleado.class); //FROM Empleado e
+		
+		Predicate pNombre = cb.conjunction();// where p1 p2
+		
+		
+		if(palabra != "") {
+			//pNombre = cb.like(personas.get("first_name"), "%"+palabra+"%");
+		}
+		return null;
+	}
+
 }
